@@ -5,15 +5,24 @@ export interface Position {
   y: number;
 }
 
+enum Direction {
+  North,
+  East,
+  South,
+  West,
+}
+
+export type Exits = [Direction, Direction];
+
 export interface RichPosition extends Position {
   color: number;
-  dir: string;
+  exits: Exits;
 }
 
 type GetPositionFunc = (index: number, width: number) => Position;
 export const getPosition: GetPositionFunc = (index: number, width: number) => ({
-  x: index % width,
-  y: Math.floor(index / width),
+  x: Math.floor(index / width),
+  y: index % width,
 });
 
 type IsSamePositionFunc = (posA: Position, posB: Position) => boolean;
@@ -34,21 +43,44 @@ export const subPositions: SubPositionsFunc = (posA, posB) => ({x: posA.x - posB
 type IsInBoundsFunc = (pos: Position, width: number, height: number) => boolean;
 export const isInBounds: IsInBoundsFunc = ({x, y}, width, height) => x < width && x >= 0 && y < height && y >= 0;
 
-type ToDirectionFunc = (posA: Position, posB: Position) => string;
+type ToDirectionFunc = (posA: Position, posB: Position) => Direction;
 export const toDirection: ToDirectionFunc = (posA, posB) => {
   const {x, y} = subPositions(posA, posB);
   if (x === -1 || x > 1) {
-    return 'w';
+    return Direction.West;
   }
   if (x === 1 || x < -1) {
-    return 'e';
+    return Direction.East;
   }
   if (y === -1 || y > 1) {
-    return 'n';
+    return Direction.North;
   }
-  return 's';
+  return Direction.South;
 };
 
-type SortDirectionFunc = (dirA: string, dirB: string) => number;
-const dirPrio = ['n', 's', 'w', 'e'];
-export const sortDirection: SortDirectionFunc = (dirA, dirB) => dirPrio.indexOf(dirA) - dirPrio.indexOf(dirB);
+type GetExitsFunc = (point: Position, prev: Position, next: Position) => Exits;
+export const getExits: GetExitsFunc = (point, prev, next) => [prev, next].map(pos => toDirection(pos, point)) as Exits;
+
+type HasExitFunc = (exits: Exits) => boolean;
+export const hasNorth: HasExitFunc = exits => exits.includes(Direction.North);
+export const hasEast: HasExitFunc = exits => exits.includes(Direction.East);
+export const hasSouth: HasExitFunc = exits => exits.includes(Direction.South);
+export const hasWest: HasExitFunc = exits => exits.includes(Direction.West);
+export const hasNorthSouth: HasExitFunc = exits => hasNorth(exits) && hasSouth(exits);
+export const hasEastWest: HasExitFunc = exits => hasEast(exits) && hasWest(exits);
+
+type RotateExitsFunc = (exits: Exits, rotation: number) => Exits;
+export const rotateExits: RotateExitsFunc = (exits, rotation) =>
+  (exits as number[]).map(exit => (exit + rotation) % 4) as Exits;
+
+export const dummyMap: RichPosition[][] = [
+  [{x: 0, y: 0, exits: [Direction.East, Direction.South], color: 0}],
+  [{x: 1, y: 0, exits: [Direction.East, Direction.West], color: 0}],
+  [{x: 2, y: 0, exits: [Direction.South, Direction.West], color: 0}],
+  [{x: 0, y: 1, exits: [Direction.North, Direction.South], color: 1}],
+  [{x: 1, y: 1, exits: [Direction.East, Direction.West], color: 1}],
+  [{x: 2, y: 1, exits: [Direction.South, Direction.North], color: 1}],
+  [{x: 0, y: 2, exits: [Direction.East, Direction.North], color: 0}],
+  [{x: 1, y: 2, exits: [Direction.East, Direction.West], color: 0}],
+  [{x: 2, y: 2, exits: [Direction.North, Direction.West], color: 0}],
+];

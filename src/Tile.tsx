@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import {jsx, ObjectInterpolation} from '@emotion/core';
-import {RichPosition, Position} from './position';
+import {RichPosition, Position, Exits, hasNorthSouth, hasNorth, hasEastWest, hasWest} from './position';
 
 interface TileProps extends Position {
   lines: RichPosition[];
@@ -16,14 +16,16 @@ const tileStyle: TileStyleFunc = (size, x, y) => ({
   width: `${size}px`,
   height: `${size}px`,
   transition: 'transform .2s ease-in-out',
-  top: `${x * size}px`,
-  left: `${y * size}px`,
+  left: `${x * size}px`,
+  top: `${y * size}px`,
 });
 
-type CornerStyleFunc = (size: number, colNum: number, dir: string) => ObjectInterpolation<undefined>;
-const cornerStyle: CornerStyleFunc = (size, colNum, dir) => {
+type CornerStyleFunc = (size: number, colNum: number, exits: Exits) => ObjectInterpolation<undefined>;
+const cornerStyle: CornerStyleFunc = (size, colNum, exits) => {
   const offset = size / 4;
-  const color = ['#f00', '#12f', '#080', '#fb0'][colNum - 1];
+  const color = ['#f00', '#12f', '#080', '#fb0'][colNum];
+  const top = hasNorthSouth(exits) ? -size : !hasNorth(exits) ? offset : -size * 2 - offset;
+  const left = hasEastWest(exits) ? -size : !hasWest(exits) ? offset : -size * 2 - offset;
   return {
     position: 'absolute',
     width: `${size}px`,
@@ -39,18 +41,16 @@ const cornerStyle: CornerStyleFunc = (size, colNum, dir) => {
       width: `${size * 3}px`,
       boxSizing: 'border-box',
       border: `${size / 2}px solid ${color}`,
-      top: dir === 'ns' ? `${-size}px` : ['sw', 'se', 'we'].includes(dir) ? `${offset}px` : 'unset',
-      bottom: ['nw', 'ne'].includes(dir) ? `${offset}px` : 'unset',
-      right: dir === 'we' ? `${-size}px` : ['ne', 'se', 'ns'].includes(dir) ? `${offset}px` : 'unset',
-      left: ['sw', 'nw'].includes(dir) ? `${offset}px` : 'unset',
+      top: `${top}px`,
+      left: `${left}px`,
     },
   };
 };
 
 export default ({lines, rotation, onClick, x, y, size}: TileProps) => (
   <div css={tileStyle(size, x, y)} style={{transform: `rotate(${rotation * 90}deg)`}} onClick={onClick}>
-    {lines.map(({color, dir}) => (
-      <div css={cornerStyle(size, color, dir)} />
+    {lines.map(({color, exits}) => (
+      <div css={cornerStyle(size, color, exits)} />
     ))}
   </div>
 );
