@@ -1,17 +1,16 @@
 /** @jsx jsx */
 import {jsx, ObjectInterpolation} from '@emotion/core';
 import {RichPosition, Position, Exits, hasNorthSouth, hasNorth, hasEastWest, hasWest} from './position';
+import {MouseEvent} from 'react';
 
 interface TileProps extends Position {
   lines: RichPosition[];
   rotation: number;
-  onClick: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onClick: (event: MouseEvent<HTMLDivElement>) => void;
   size: number;
 }
 
-type TileStyleFunc = (size: number, x: number, y: number) => ObjectInterpolation<undefined>;
-
-const tileStyle: TileStyleFunc = (size, x, y) => ({
+const tileStyle = (size: number, x: number, y: number): ObjectInterpolation<undefined> => ({
   position: 'absolute',
   width: `${size}px`,
   height: `${size}px`,
@@ -20,8 +19,7 @@ const tileStyle: TileStyleFunc = (size, x, y) => ({
   top: `${y * size}px`,
 });
 
-type CornerStyleFunc = (size: number, colNum: number, exits: Exits) => ObjectInterpolation<undefined>;
-const cornerStyle: CornerStyleFunc = (size, colNum, exits) => {
+const cornerStyle = (size: number, colNum: number, exits: Exits): ObjectInterpolation<undefined> => {
   const offset = size / 4;
   const color = ['#f00', '#12f', '#080', '#fb0'][colNum];
   const top = hasNorthSouth(exits) ? -size : !hasNorth(exits) ? offset : -size * 2 - offset;

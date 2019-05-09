@@ -19,32 +19,25 @@ export interface RichPosition extends Position {
   exits: Exits;
 }
 
-type GetPositionFunc = (index: number, width: number) => Position;
-export const getPosition: GetPositionFunc = (index: number, width: number) => ({
+export const getPosition = (index: number, width: number): Position => ({
   x: Math.floor(index / width),
   y: index % width,
 });
 
-type IsSamePositionFunc = (posA: Position, posB: Position) => boolean;
-export const isSame: IsSamePositionFunc = (posA, posB) => posA.x === posB.x && posA.y === posB.y;
+export const isSame = (posA: Position, posB: Position) => posA.x === posB.x && posA.y === posB.y;
 
-type AddPositionsFunc = (posA: Position, posB: Position) => Position;
-export const addPositions: AddPositionsFunc = (posA, posB) => ({x: posA.x + posB.x, y: posA.y + posB.y});
+export const addPositions = (posA: Position, posB: Position): Position => ({x: posA.x + posB.x, y: posA.y + posB.y});
 
-type AddPositionsWrapFunc = (posA: Position, posB: Position, width: number, height: number) => Position;
-export const addPositionsWrap: AddPositionsWrapFunc = (posA, posB, width, height) => {
+export const addPositionsWrap = (posA: Position, posB: Position, width: number, height: number): Position => {
   const {x, y} = addPositions(posA, posB);
   return {x: wrap(x, width), y: wrap(y, height)};
 };
 
-type SubPositionsFunc = (posA: Position, posB: Position) => Position;
-export const subPositions: SubPositionsFunc = (posA, posB) => ({x: posA.x - posB.x, y: posA.y - posB.y});
+export const subPositions = (posA: Position, posB: Position): Position => ({x: posA.x - posB.x, y: posA.y - posB.y});
 
-type IsInBoundsFunc = (pos: Position, width: number, height: number) => boolean;
-export const isInBounds: IsInBoundsFunc = ({x, y}, width, height) => x < width && x >= 0 && y < height && y >= 0;
+export const isInBounds = ({x, y}: Position, width: number, height: number) => x < width && x >= 0 && y < height && y >= 0;
 
-type ToDirectionFunc = (posA: Position, posB: Position) => Direction;
-export const toDirection: ToDirectionFunc = (posA, posB) => {
+export const toDirection = (posA: Position, posB: Position): Direction => {
   const {x, y} = subPositions(posA, posB);
   if (x === -1 || x > 1) {
     return Direction.West;
@@ -58,20 +51,16 @@ export const toDirection: ToDirectionFunc = (posA, posB) => {
   return Direction.South;
 };
 
-type GetExitsFunc = (point: Position, prev: Position, next: Position) => Exits;
-export const getExits: GetExitsFunc = (point, prev, next) => [prev, next].map(pos => toDirection(pos, point)) as Exits;
+export const getExits = (point: Position, prev: Position, next: Position) => [prev, next].map(pos => toDirection(pos, point)) as Exits;
 
-type HasExitFunc = (exits: Exits) => boolean;
-export const hasNorth: HasExitFunc = exits => exits.includes(Direction.North);
-export const hasEast: HasExitFunc = exits => exits.includes(Direction.East);
-export const hasSouth: HasExitFunc = exits => exits.includes(Direction.South);
-export const hasWest: HasExitFunc = exits => exits.includes(Direction.West);
-export const hasNorthSouth: HasExitFunc = exits => hasNorth(exits) && hasSouth(exits);
-export const hasEastWest: HasExitFunc = exits => hasEast(exits) && hasWest(exits);
+export const hasNorth = (exits: Exits) => exits.includes(Direction.North);
+export const hasEast = (exits: Exits) => exits.includes(Direction.East);
+export const hasSouth = (exits: Exits) => exits.includes(Direction.South);
+export const hasWest = (exits: Exits) => exits.includes(Direction.West);
+export const hasNorthSouth = (exits: Exits) => hasNorth(exits) && hasSouth(exits);
+export const hasEastWest = (exits: Exits) => hasEast(exits) && hasWest(exits);
 
-type RotateExitsFunc = (exits: Exits, rotation: number) => Exits;
-export const rotateExits: RotateExitsFunc = (exits, rotation) =>
-  (exits as number[]).map(exit => (exit + rotation) % 4) as Exits;
+export const rotateExits = (exits: Exits, rotation: number) => (exits as number[]).map(exit => (exit + rotation) % 4) as Exits;
 
 type DirToPositionFunc = (dir: Direction) => Position;
 export const dirToPosition: DirToPositionFunc = dir =>
