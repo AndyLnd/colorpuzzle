@@ -8,14 +8,16 @@ interface BoardProps {
   width: number;
   height: number;
   map: RichPosition[][];
+  onRotate: (rotation: number[]) => void;
 }
 
-export default ({width = 4, height = 4, map}: BoardProps) => {
+export default ({width = 4, height = 4, map, onRotate}: BoardProps) => {
   const [rotation, setRotation] = useState(makeRotationMap(width * height));
   useEffect(() => setRotation(makeRotationMap(width * height)), [width, height, map]);
   function rotate(num: number) {
     const newRotation = rotation.map((tile, index) => (index === num ? tile + 1 : tile));
     setRotation(newRotation);
+    onRotate(newRotation);
   }
   return (
     <div>

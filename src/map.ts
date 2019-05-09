@@ -8,6 +8,8 @@ import {
   getPosition,
   Exits,
   getExits,
+  dirToPosition,
+  rotateExits,
 } from './position';
 import {rndInt, rndArrayElement} from './util';
 
@@ -54,9 +56,9 @@ const makePath = (width: number, height: number, color: number): RichPosition[] 
 export const makeMap = (width: number, height: number): RichPosition[][] => {
   const paths = [
     ...makePath(width, height, 0),
-    ...makePath(width, height, 1),
+/*    ...makePath(width, height, 1),
     ...makePath(width, height, 2),
-    ...makePath(width, height, 3),
+    ...makePath(width, height, 3),*/
   ];
   return Array.from({length: width * height}, (el, index) => {
     const {x, y} = getPosition(index, width);
@@ -64,4 +66,21 @@ export const makeMap = (width: number, height: number): RichPosition[][] => {
   });
 };
 
-export const checkSolved = (map: RichPosition[][], rotation: number[]) => {};
+export const checkSolved = (posMap: RichPosition[][], rotation: number[], width: number, height: number) => {
+  const rotationPos = rotation.map(rotation => {
+    const {x, y} = getPosition(rotation, width);
+    return {x, y, rotation};
+  });
+  const tiles = posMap.flat(1).map(({x, y, color, exits}) => {
+    const {rotation} = rotationPos.find(rot => rot.x === x && rot.y === y) || {rotation: 0};
+    return {x, y, color, exits: rotateExits(exits, rotation)};
+  });
+  console.log(tiles);
+  return tiles.every(tile => {
+    const neighborPos = tile.exits.map(exit => addPositionsWrap(tile, dirToPosition(exit), width, height));
+    const neighbors = neighborPos.map(
+      pos => tiles.find(({color, x, y}) => color === tile.color && x === pos.x && y === pos.y) || {exits: [] as Exits}
+    );
+    return neighbors.every(({exits}, index) => exits.includes((tile.exits[index] + 2) % 4));
+  });
+};

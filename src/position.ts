@@ -12,7 +12,7 @@ enum Direction {
   West,
 }
 
-export type Exits = [Direction, Direction];
+export type Exits = Direction[];
 
 export interface RichPosition extends Position {
   color: number;
@@ -72,6 +72,15 @@ export const hasEastWest: HasExitFunc = exits => hasEast(exits) && hasWest(exits
 type RotateExitsFunc = (exits: Exits, rotation: number) => Exits;
 export const rotateExits: RotateExitsFunc = (exits, rotation) =>
   (exits as number[]).map(exit => (exit + rotation) % 4) as Exits;
+
+type DirToPositionFunc = (dir: Direction) => Position;
+export const dirToPosition: DirToPositionFunc = dir =>
+  ({
+    [Direction.North]: {x: 0, y: -1},
+    [Direction.East]: {x: 1, y: 0},
+    [Direction.South]: {x: 0, y: 1},
+    [Direction.West]: {x: -1, y: 0},
+  }[dir]);
 
 export const dummyMap: RichPosition[][] = [
   [{x: 0, y: 0, exits: [Direction.East, Direction.South], color: 0}],
