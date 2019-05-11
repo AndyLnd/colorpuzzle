@@ -1,15 +1,14 @@
 import {
-  RichPosition,
+  PosGroup,
   Position,
   addPositionsWrap,
   isInBounds,
   isSame,
-  toDirection,
   getPosition,
-  Exits,
   getExits,
-  dirToPosition,
+  dirVectors,
   rotateExits,
+  RichPosition,
 } from './position';
 import {rndInt, rndArrayElement} from './util';
 
@@ -53,34 +52,39 @@ const makePath = (width: number, height: number, color: number): RichPosition[] 
   );
 };
 
-export const makeMap = (width: number, height: number): RichPosition[][] => {
+export const makeMap = (width: number, height: number): PosGroup[] => {
   const paths = [
     ...makePath(width, height, 0),
-/*    ...makePath(width, height, 1),
+    ...makePath(width, height, 1),
     ...makePath(width, height, 2),
-    ...makePath(width, height, 3),*/
+    ...makePath(width, height, 3),
   ];
-  return Array.from({length: width * height}, (el, index) => {
+  return Array.from({length: width * height}, (_, index) => {
     const {x, y} = getPosition(index, width);
-    return paths.filter(path => path.x === x && path.y === y);
+    const localPaths = paths.filter(path => path.x === x && path.y === y);
+    return {x, y, tiles: localPaths};
   });
 };
 
-export const checkSolved = (posMap: RichPosition[][], rotation: number[], width: number, height: number) => {
-  const rotationPos = rotation.map(rotation => {
-    const {x, y} = getPosition(rotation, width);
-    return {x, y, rotation};
-  });
-  const tiles = posMap.flat(1).map(({x, y, color, exits}) => {
-    const {rotation} = rotationPos.find(rot => rot.x === x && rot.y === y) || {rotation: 0};
-    return {x, y, color, exits: rotateExits(exits, rotation)};
-  });
-  console.log(tiles);
-  return tiles.every(tile => {
-    const neighborPos = tile.exits.map(exit => addPositionsWrap(tile, dirToPosition(exit), width, height));
-    const neighbors = neighborPos.map(
-      pos => tiles.find(({color, x, y}) => color === tile.color && x === pos.x && y === pos.y) || {exits: [] as Exits}
-    );
-    return neighbors.every(({exits}, index) => exits.includes((tile.exits[index] + 2) % 4));
-  });
+export const checkSolved = (posMap: PosGroup[], rotation: number[], width: number, height: number) => {
+  const rotationMap = posMap.map((pos, index) => ({...pos, rotation: rotation[index]}));
+  return rotationMap.every(({x, y, rotation, tiles}) =>
+    tiles.every(({color, exits}) => {
+      const rotExits = rotateExits(exits, rotation);
+      return rotExits.every(exit => {
+        const pos = addPositionsWrap({x, y}, dirVectors[exit], width, height);
+        const neighbor = rotationMap.find(other => isSame(pos, other)) || {
+          tiles: [],
+          rotation: 0,
+        };
+        return neighbor.tiles.some(nbTile => {
+          if (nbTile.color === color) {
+            const nbExitOpposites = rotateExits(nbTile.exits, neighbor.rotation + 2);
+            return nbExitOpposites.includes(exit);
+          }
+          return false;
+        });
+      });
+    })
+  );
 };

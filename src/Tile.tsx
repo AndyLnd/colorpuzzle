@@ -1,10 +1,10 @@
 /** @jsx jsx */
 import {jsx, ObjectInterpolation} from '@emotion/core';
-import {RichPosition, Position, Exits, hasNorthSouth, hasNorth, hasEastWest, hasWest} from './position';
+import {Position, Exits, hasNorthSouth, hasNorth, hasEastWest, hasWest, Tile} from './position';
 import {MouseEvent} from 'react';
 
 interface TileProps extends Position {
-  lines: RichPosition[];
+  lines: Tile[];
   rotation: number;
   onClick: (event: MouseEvent<HTMLDivElement>) => void;
   size: number;

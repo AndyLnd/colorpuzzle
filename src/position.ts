@@ -19,6 +19,15 @@ export interface RichPosition extends Position {
   exits: Exits;
 }
 
+export interface Tile {
+  color: number;
+  exits: Exits;
+}
+
+export interface PosGroup extends Position {
+  tiles: Tile[];
+}
+
 export const getPosition = (index: number, width: number): Position => ({
   x: Math.floor(index / width),
   y: index % width,
@@ -35,7 +44,8 @@ export const addPositionsWrap = (posA: Position, posB: Position, width: number, 
 
 export const subPositions = (posA: Position, posB: Position): Position => ({x: posA.x - posB.x, y: posA.y - posB.y});
 
-export const isInBounds = ({x, y}: Position, width: number, height: number) => x < width && x >= 0 && y < height && y >= 0;
+export const isInBounds = ({x, y}: Position, width: number, height: number) =>
+  x < width && x >= 0 && y < height && y >= 0;
 
 export const toDirection = (posA: Position, posB: Position): Direction => {
   const {x, y} = subPositions(posA, posB);
@@ -51,7 +61,8 @@ export const toDirection = (posA: Position, posB: Position): Direction => {
   return Direction.South;
 };
 
-export const getExits = (point: Position, prev: Position, next: Position) => [prev, next].map(pos => toDirection(pos, point)) as Exits;
+export const getExits = (point: Position, prev: Position, next: Position) =>
+  [prev, next].map(pos => toDirection(pos, point)) as Exits;
 
 export const hasNorth = (exits: Exits) => exits.includes(Direction.North);
 export const hasEast = (exits: Exits) => exits.includes(Direction.East);
@@ -60,16 +71,14 @@ export const hasWest = (exits: Exits) => exits.includes(Direction.West);
 export const hasNorthSouth = (exits: Exits) => hasNorth(exits) && hasSouth(exits);
 export const hasEastWest = (exits: Exits) => hasEast(exits) && hasWest(exits);
 
-export const rotateExits = (exits: Exits, rotation: number) => (exits as number[]).map(exit => (exit + rotation) % 4) as Exits;
+export const rotateExits = (exits: Exits, rota: number) => exits.map(exit => (exit + rota) % 4) as Exits;
 
-type DirToPositionFunc = (dir: Direction) => Position;
-export const dirToPosition: DirToPositionFunc = dir =>
-  ({
-    [Direction.North]: {x: 0, y: -1},
-    [Direction.East]: {x: 1, y: 0},
-    [Direction.South]: {x: 0, y: 1},
-    [Direction.West]: {x: -1, y: 0},
-  }[dir]);
+export const dirVectors: Record<Direction, Position> = {
+  [Direction.North]: {x: 0, y: -1},
+  [Direction.East]: {x: 1, y: 0},
+  [Direction.South]: {x: 0, y: 1},
+  [Direction.West]: {x: -1, y: 0},
+};
 
 export const dummyMap: RichPosition[][] = [
   [{x: 0, y: 0, exits: [Direction.East, Direction.South], color: 0}],
