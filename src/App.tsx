@@ -9,7 +9,7 @@ import {renderMap} from './tileRenderer';
 const globalStyle = css({
   body: {
     margin: 0,
-    background: 'linear-gradient(135deg, #e2e2e2 0%,#dbdbdb 50%,#d1d1d1 51%,#fefefe 100%)',
+    background: 'linear-gradient(135deg, #45484d 0%,#000000 100%);',
     minHeight: '100vh',
   },
 });
@@ -56,14 +56,14 @@ const solvedStyle = (size: number) =>
     backgroundPosition: 'center',
     clipPath: 'circle(100%)',
     animation: `${revealAni} 1s linear .25s backwards, 
-                ${moveXAni(size)} 5s ease-in-out infinite, 
-                ${moveYAni(size)} 5s linear infinite`,
+                ${moveXAni(size)} 5s ease-in-out .5s infinite, 
+                ${moveYAni(size)} 5s linear .5s infinite`,
   });
 
 const boardWrapperStyle = (visible: boolean) =>
   css({
     opacity: visible ? 1 : 0,
-    transition: 'opacity .5s ease-in-out',
+    transition: 'opacity .5s .25s ease-in-out',
   });
 
 export default () => {
@@ -81,7 +81,8 @@ export default () => {
       solvedBg.current = solvedCan.toDataURL();
     }
   };
-  const size = Math.floor(100 / Math.max(width, height)) * 4;
+  const totalSize = Math.min(document.body.offsetHeight, document.body.offsetWidth, 532) - 32;
+  const size = Math.floor(totalSize / (Math.max(width, height) * 4)) * 4;
   return (
     <React.Fragment>
       <Global styles={globalStyle} />

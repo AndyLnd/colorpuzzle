@@ -25,8 +25,8 @@ const boardStyle = (width: number, height: number, size: number) =>
     gridTemplateRows: `repeat(${height}, 1fr)`,
     maxWidth: 512,
     maxHeight: 512,
-    width: 'calc(100vmin - 32px)',
-    height: 'calc(100vmin - 32px)',
+    width: size * width,
+    height: size * height,
   });
 
 export default ({width = 4, height = 4, map, onRotate, size}: BoardProps) => {

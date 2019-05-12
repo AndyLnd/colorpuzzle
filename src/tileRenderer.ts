@@ -27,14 +27,14 @@ const drawCurve = (ctx: CanvasRenderingContext2D, color: number, exits: Directio
 
 export const renderTile = (tiles: Tile[], size = 256) => {
   const ctx = makeContext(size, size);
-  ctx.globalCompositeOperation = 'lighten';
+  ctx.globalCompositeOperation = 'screen';
   tiles.forEach(({color, exits}) => drawCurve(ctx, color, exits, size));
   return ctx.canvas;
 };
 
 export const renderMap = (map: PosGroup[], rotation: number[], width: number, height: number, size = 256) => {
   const ctx = makeContext(width * size, height * size);
-  ctx.globalCompositeOperation = 'lighten';
+  ctx.globalCompositeOperation = 'screen';
   map.forEach((pos, index) => {
     const {x, y} = getPosition(index, width);
     const rota = rotation[index];
