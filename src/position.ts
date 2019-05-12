@@ -5,7 +5,7 @@ export interface Position {
   y: number;
 }
 
-enum Direction {
+export enum Direction {
   North,
   East,
   South,
@@ -29,8 +29,8 @@ export interface PosGroup extends Position {
 }
 
 export const getPosition = (index: number, width: number): Position => ({
-  x: Math.floor(index / width),
-  y: index % width,
+  x: index % width,
+  y: Math.floor(index / width),
 });
 
 export const isSame = (posA: Position, posB: Position) => posA.x === posB.x && posA.y === posB.y;

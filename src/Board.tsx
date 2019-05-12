@@ -1,7 +1,10 @@
-import React, {useState, useEffect} from 'react';
+/** @jsx jsx */
+import {jsx} from '@emotion/core';
+import {useState, useEffect} from 'react';
 import Tile from './Tile';
-import {getPosition, PosGroup, Position} from './position';
+import {getPosition, PosGroup} from './position';
 import FullScreenCenter from './FullScreenCenter';
+import css from '@emotion/css';
 
 const makeRotationMap = (length: number) => Array.from({length}, () => Math.floor(Math.random() * 16));
 
@@ -10,9 +13,23 @@ interface BoardProps {
   height: number;
   map: PosGroup[];
   onRotate: (rotation: number[]) => void;
+  size: number;
 }
 
-export default ({width = 4, height = 4, map, onRotate}: BoardProps) => {
+const boardStyle = (width: number, height: number, size: number) =>
+  css({
+    position: 'absolute',
+    margin: 'auto',
+    display: 'grid',
+    gridTemplateColumns: `repeat(${width}, 1fr)`,
+    gridTemplateRows: `repeat(${height}, 1fr)`,
+    maxWidth: 512,
+    maxHeight: 512,
+    width: 'calc(100vmin - 32px)',
+    height: 'calc(100vmin - 32px)',
+  });
+
+export default ({width = 4, height = 4, map, onRotate, size}: BoardProps) => {
   const [rotation, setRotation] = useState(makeRotationMap(width * height));
   useEffect(() => setRotation(makeRotationMap(width * height)), [width, height, map]);
   function rotate(num: number) {
@@ -20,10 +37,9 @@ export default ({width = 4, height = 4, map, onRotate}: BoardProps) => {
     setRotation(newRotation);
     onRotate(newRotation);
   }
-  const size = Math.floor(100 / Math.max(width, height)) * 4;
   return (
     <FullScreenCenter>
-      <div style={{width: `${size * width}px`, height: `${size * height}px`, position: 'relative'}}>
+      <div css={boardStyle(width, height, size)}>
         {map.map((tile, index) => {
           const {x, y} = getPosition(index, width);
           return (

@@ -2,7 +2,6 @@ import {
   PosGroup,
   Position,
   addPositionsWrap,
-  isInBounds,
   isSame,
   getPosition,
   getExits,
@@ -25,11 +24,7 @@ const makePath = (width: number, height: number, color: number): RichPosition[] 
     while (!isDone && isPossible) {
       const candidates = [[-1, 0], [1, 0], [0, -1], [0, 1]]
         .map(([x, y]) => addPositionsWrap(currentStep, {x, y}, width, height))
-        .filter(
-          pos =>
-            isInBounds(pos, width, height) &&
-            steps.every((step, index) => (index === 0 && steps.length > minLength) || !isSame(step, pos))
-        );
+        .filter(pos => steps.every((step, index) => (index === 0 && steps.length > minLength) || !isSame(step, pos)));
       if (candidates.length > 0) {
         currentStep = rndArrayElement(candidates);
         if (isSame(steps[0], currentStep)) {
@@ -66,6 +61,10 @@ export const makeMap = (width: number, height: number): PosGroup[] => {
   });
 };
 
+interface RotPosGroup extends PosGroup {
+  rotation: number;
+}
+
 export const checkSolved = (posMap: PosGroup[], rotation: number[], width: number, height: number) => {
   const rotationMap = posMap.map((pos, index) => ({...pos, rotation: rotation[index]}));
   return rotationMap.every(({x, y, rotation, tiles}) =>
@@ -73,10 +72,7 @@ export const checkSolved = (posMap: PosGroup[], rotation: number[], width: numbe
       const rotExits = rotateExits(exits, rotation);
       return rotExits.every(exit => {
         const pos = addPositionsWrap({x, y}, dirVectors[exit], width, height);
-        const neighbor = rotationMap.find(other => isSame(pos, other)) || {
-          tiles: [],
-          rotation: 0,
-        };
+        const neighbor = rotationMap.find(other => isSame(pos, other)) as RotPosGroup;
         return neighbor.tiles.some(nbTile => {
           if (nbTile.color === color) {
             const nbExitOpposites = rotateExits(nbTile.exits, neighbor.rotation + 2);
