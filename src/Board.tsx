@@ -23,8 +23,6 @@ const boardStyle = (width: number, height: number, size: number) =>
     display: 'grid',
     gridTemplateColumns: `repeat(${width}, 1fr)`,
     gridTemplateRows: `repeat(${height}, 1fr)`,
-    maxWidth: 512,
-    maxHeight: 512,
     width: size * width,
     height: size * height,
   });
