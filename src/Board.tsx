@@ -1,20 +1,11 @@
 /** @jsx jsx */
 import {jsx} from '@emotion/core';
-import {useState, useEffect} from 'react';
+import {useContext} from 'react';
 import Tile from './Tile';
-import {getPosition, PosGroup} from './position';
+import {getPosition} from './position';
 import FullScreenCenter from './FullScreenCenter';
 import css from '@emotion/css';
-
-const makeRotationMap = (length: number) => Array.from({length}, () => Math.floor(Math.random() * 16));
-
-interface BoardProps {
-  width: number;
-  height: number;
-  map: PosGroup[];
-  onRotate: (rotation: number[]) => void;
-  size: number;
-}
+import {GameContext} from './GameProvider';
 
 const boardStyle = (width: number, height: number, size: number) =>
   css({
@@ -27,16 +18,12 @@ const boardStyle = (width: number, height: number, size: number) =>
     height: size * height,
   });
 
-export default ({width = 4, height = 4, map, onRotate, size}: BoardProps) => {
-  const [rotation, setRotation] = useState(makeRotationMap(width * height));
-  useEffect(() => setRotation(makeRotationMap(width * height)), [width, height, map]);
-  function rotate(num: number) {
-    const newRotation = rotation.map((tile, index) => (index === num ? tile + 1 : tile));
-    setRotation(newRotation);
-    onRotate(newRotation);
-  }
+export default (props: React.Props<HTMLDivElement>) => {
+  const {rotate, rotation, map, width, height} = useContext(GameContext);
+  const totalSize = Math.min(document.body.offsetHeight, document.body.offsetWidth, 532) - 32;
+  const size = Math.floor(totalSize / (Math.max(width, height) * 4)) * 4;
   return (
-    <FullScreenCenter>
+    <FullScreenCenter {...props}>
       <div css={boardStyle(width, height, size)}>
         {map.map((tile, index) => {
           const {x, y} = getPosition(index, width);

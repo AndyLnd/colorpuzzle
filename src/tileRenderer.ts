@@ -1,10 +1,11 @@
 import {Direction, Tile, PosGroup, getPosition, rotateExits} from './position';
 
+const roundC = 0.2761;
 const corners = {
-  [Direction.North]: {x: 0.5, y: 0, cx: 0.5, cy: 0.25},
-  [Direction.East]: {x: 1, y: 0.5, cx: 0.75, cy: 0.5},
-  [Direction.South]: {x: 0.5, y: 1, cx: 0.5, cy: 0.75},
-  [Direction.West]: {x: 0, y: 0.5, cx: 0.25, cy: 0.5},
+  [Direction.North]: {x: 0.5, y: 0, cx: 0.5, cy: roundC},
+  [Direction.East]: {x: 1, y: 0.5, cx: 1 - roundC, cy: 0.5},
+  [Direction.South]: {x: 0.5, y: 1, cx: 0.5, cy: 1 - roundC},
+  [Direction.West]: {x: 0, y: 0.5, cx: roundC, cy: 0.5},
 };
 
 const colors = ['#f00', '#12f', '#080', '#fb0'];

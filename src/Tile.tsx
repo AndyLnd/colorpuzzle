@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import {jsx, ObjectInterpolation} from '@emotion/core';
 import {Position, Tile} from './position';
-import {MouseEvent, useRef, useEffect} from 'react';
+import {MouseEvent, useEffect, useState} from 'react';
 import {renderTile} from './tileRenderer';
 
 interface TileProps extends Position {
@@ -18,15 +18,15 @@ const tileStyle = (size: number, x: number, y: number): ObjectInterpolation<unde
 });
 
 export default ({lines, rotation, onClick, x, y, size}: TileProps) => {
-  const backgroundImage = useRef('');
+  const [backgroundImage,setBackgroundImage] = useState('data:,');
   useEffect(() => {
     const can = renderTile(lines);
-    backgroundImage.current = can.toDataURL();
+    setBackgroundImage(can.toDataURL());
   }, [lines]);
   return (
     <div
       css={tileStyle(size, x, y)}
-      style={{transform: `rotate(${rotation * 90}deg)`, backgroundImage: `url(${backgroundImage.current})`}}
+      style={{transform: `rotate(${rotation * 90}deg)`, backgroundImage: `url(${backgroundImage})`}}
       onClick={onClick}
     />
   );

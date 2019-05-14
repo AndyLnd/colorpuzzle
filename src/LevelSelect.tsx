@@ -1,10 +1,8 @@
 /** @jsx jsx */
 import {jsx, css} from '@emotion/core';
 import FullScreenCenter from './FullScreenCenter';
-
-interface SelectProps {
-  onSelect: (width: number, height: number) => void;
-}
+import {useContext} from 'react';
+import {GameContext} from './GameProvider';
 
 const containerStyle = css({
   backgroundColor: 'rgba(255,255,255,.5)',
@@ -38,17 +36,20 @@ const buttonStyle = css({
 
 const sizes = Array.from({length: 8}, (_, index) => ({width: index + 3, height: index + 3}));
 
-export default ({onSelect}: SelectProps) => (
-  <FullScreenCenter>
-    <div css={containerStyle}>
-      {sizes.map(({width, height}) => {
-        const key = `${width} x ${height}`;
-        return (
-          <button key={key} css={buttonStyle} onClick={() => onSelect(width, height)}>
-            {key}
-          </button>
-        );
-      })}
-    </div>
-  </FullScreenCenter>
-);
+export default (props: React.Props<HTMLDivElement>) => {
+  const {start} = useContext(GameContext);
+  return (
+    <FullScreenCenter {...props}>
+      <div css={containerStyle}>
+        {sizes.map(({width, height}) => {
+          const key = `${width} x ${height}`;
+          return (
+            <button key={key} css={buttonStyle} onClick={() => start(width, height)}>
+              {key}
+            </button>
+          );
+        })}
+      </div>
+    </FullScreenCenter>
+  );
+};
