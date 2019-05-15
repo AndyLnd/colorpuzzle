@@ -42,11 +42,11 @@ const solvedStyle = (size: number): ObjectInterpolation<undefined> => ({
 const size = 64;
 
 export default (props: React.Props<HTMLDivElement>) => {
-  const {width, height, map, rotation, isSolved} = useContext(GameContext);
+  const {width, height, map, isSolved} = useContext(GameContext);
   const [bg, setBG] = useState('data:,');
   useEffect(() => {
     if (isSolved) {
-      const rendered = renderMap(map, rotation, width, height, size * 2);
+      const rendered = renderMap(map, width, height, size * 2);
       setBG(rendered.toDataURL());
     }
   }, [isSolved]);

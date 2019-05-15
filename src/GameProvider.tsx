@@ -1,14 +1,14 @@
 import React, {useReducer} from 'react';
 import {makeMap, checkSolved} from './map';
-import {PosGroup} from './position';
+import {Map} from './position';
 
 interface State {
   width: number;
   height: number;
-  rotation: number[];
-  map: PosGroup[];
+  map: Map;
   isSolved: boolean;
   isStarted: boolean;
+  tileSize: number;
 }
 
 interface Context extends State {
@@ -21,10 +21,10 @@ type Action = {type: 'start'; payload: {width: number; height: number}} | {type:
 const defaultState: State = {
   width: 3,
   height: 3,
-  rotation: [],
   map: [],
   isSolved: false,
   isStarted: false,
+  tileSize: 0,
 };
 
 const defaultContext = {
@@ -33,28 +33,29 @@ const defaultContext = {
   rotate: () => {},
 };
 
-const makeRotationMap = (length: number) => Array.from({length}, () => Math.floor(Math.random() * 16));
-
 export const GameContext = React.createContext<Context>(defaultContext);
 
 const gameReducer = (state: State, action: Action) => {
   switch (action.type) {
     case 'start': {
       const {width, height} = action.payload;
+      const totalSize = Math.min(document.body.offsetHeight, document.body.offsetWidth, 532) - 32;
+      const tileSize = Math.floor(totalSize / (Math.max(width, height) * 4)) * 4;
       return {
         isSolved: false,
         width,
         height,
-        map: makeMap(width, height),
-        rotation: makeRotationMap(width * height),
+        map: makeMap(width, height, true),
         isStarted: true,
+        tileSize,
       };
     }
     case 'rotate': {
+      console.log('rotate')
       const num = action.payload;
-      const rotation = state.rotation.map((tile, index) => (index === num ? tile + 1 : tile));
-      const isSolved = checkSolved(state.map, rotation, state.width, state.width);
-      return {...state, rotation, isSolved};
+      const map = state.map.map((tile, index) => (index === num ? {...tile, rotation: tile.rotation + 1} : tile));
+      const isSolved = checkSolved(map, state.width, state.width);
+      return {...state, map, isSolved};
     }
     default: {
       return state;
@@ -66,7 +67,7 @@ export default ({children}: {children: React.ReactNode}) => {
   const [state, dispatch] = useReducer(gameReducer, defaultState);
   const start = (width: number, height: number) => dispatch({type: 'start', payload: {width, height}});
   const rotate = (num: number) => dispatch({type: 'rotate', payload: num});
-  const {width, height, map, rotation, isSolved, isStarted} = state;
+  const {width, height, map, isSolved, isStarted, tileSize} = state;
 
   return (
     <GameContext.Provider
@@ -75,10 +76,10 @@ export default ({children}: {children: React.ReactNode}) => {
         height,
         isSolved,
         map,
-        rotation,
         start,
         rotate,
         isStarted,
+        tileSize,
       }}
     >
       {children}

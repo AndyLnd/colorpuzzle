@@ -1,10 +1,5 @@
 import {wrap} from './util';
 
-export interface Position {
-  x: number;
-  y: number;
-}
-
 export enum Direction {
   North,
   East,
@@ -12,21 +7,30 @@ export enum Direction {
   West,
 }
 
+export interface Position {
+  x: number;
+  y: number;
+}
+
 export type Exits = Direction[];
 
-export interface RichPosition extends Position {
+export interface Stroke {
   color: number;
   exits: Exits;
 }
 
-export interface Tile {
-  color: number;
-  exits: Exits;
+export interface PosStroke extends Position {
+  stroke: Stroke;
 }
 
-export interface PosGroup extends Position {
-  tiles: Tile[];
+export interface TileContent {
+  rotation: number;
+  strokes: Stroke[];
 }
+
+export interface Tile extends Position, TileContent {}
+
+export type Map = Tile[];
 
 export const getPosition = (index: number, width: number): Position => ({
   x: index % width,
@@ -79,15 +83,3 @@ export const dirVectors: Record<Direction, Position> = {
   [Direction.South]: {x: 0, y: 1},
   [Direction.West]: {x: -1, y: 0},
 };
-
-export const dummyMap: RichPosition[][] = [
-  [{x: 0, y: 0, exits: [Direction.East, Direction.South], color: 0}],
-  [{x: 1, y: 0, exits: [Direction.East, Direction.West], color: 0}],
-  [{x: 2, y: 0, exits: [Direction.South, Direction.West], color: 0}],
-  [{x: 0, y: 1, exits: [Direction.North, Direction.South], color: 1}],
-  [{x: 1, y: 1, exits: [Direction.East, Direction.West], color: 1}],
-  [{x: 2, y: 1, exits: [Direction.South, Direction.North], color: 1}],
-  [{x: 0, y: 2, exits: [Direction.East, Direction.North], color: 0}],
-  [{x: 1, y: 2, exits: [Direction.East, Direction.West], color: 0}],
-  [{x: 2, y: 2, exits: [Direction.North, Direction.West], color: 0}],
-];

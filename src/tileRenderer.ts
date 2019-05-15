@@ -1,4 +1,4 @@
-import {Direction, Tile, PosGroup, getPosition, rotateExits} from './position';
+import {Direction, rotateExits, Map, Stroke} from './position';
 
 const roundC = 0.2761;
 const corners = {
@@ -26,22 +26,20 @@ const drawCurve = (ctx: CanvasRenderingContext2D, color: number, exits: Directio
   ctx.stroke();
 };
 
-export const renderTile = (tiles: Tile[], size = 256) => {
+export const renderTile = (strokes: Stroke[], size = 256) => {
   const ctx = makeContext(size, size);
   ctx.globalCompositeOperation = 'screen';
-  tiles.forEach(({color, exits}) => drawCurve(ctx, color, exits, size));
+  strokes.forEach(({color, exits}) => drawCurve(ctx, color, exits, size));
   return ctx.canvas;
 };
 
-export const renderMap = (map: PosGroup[], rotation: number[], width: number, height: number, size = 256) => {
+export const renderMap = (map: Map, width: number, height: number, size = 256) => {
   const ctx = makeContext(width * size, height * size);
   ctx.globalCompositeOperation = 'screen';
-  map.forEach((pos, index) => {
-    const {x, y} = getPosition(index, width);
-    const rota = rotation[index];
+  map.forEach(({strokes, rotation, x, y}) => {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.translate(x * size, y * size);
-    pos.tiles.forEach(({color, exits}) => drawCurve(ctx, color, rotateExits(exits, rota), size));
+    strokes.forEach(({color, exits}) => drawCurve(ctx, color, rotateExits(exits, rotation), size));
   });
   return ctx.canvas;
 };

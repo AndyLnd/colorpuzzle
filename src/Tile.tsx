@@ -1,31 +1,28 @@
 /** @jsx jsx */
-import {jsx, ObjectInterpolation} from '@emotion/core';
-import {Position, Tile} from './position';
+import {jsx} from '@emotion/core';
+import {TileContent} from './position';
 import {MouseEvent, useEffect, useState} from 'react';
 import {renderTile} from './tileRenderer';
 
-interface TileProps extends Position {
-  lines: Tile[];
-  rotation: number;
+interface TileProps extends TileContent {
   onClick: (event: MouseEvent<HTMLDivElement>) => void;
-  size: number;
 }
 
-const tileStyle = (size: number, x: number, y: number): ObjectInterpolation<undefined> => ({
+const tileStyle = {
   transition: 'transform .2s ease-in-out',
   backgroundSize: 'cover',
   opacity: 0.8,
-});
+};
 
-export default ({lines, rotation, onClick, x, y, size}: TileProps) => {
-  const [backgroundImage,setBackgroundImage] = useState('data:,');
+export default ({strokes, rotation, onClick}: TileProps) => {
+  const [backgroundImage, setBackgroundImage] = useState('data:,');
   useEffect(() => {
-    const can = renderTile(lines);
+    const can = renderTile(strokes);
     setBackgroundImage(can.toDataURL());
-  }, [lines]);
+  }, [strokes]);
   return (
     <div
-      css={tileStyle(size, x, y)}
+      css={tileStyle}
       style={{transform: `rotate(${rotation * 90}deg)`, backgroundImage: `url(${backgroundImage})`}}
       onClick={onClick}
     />

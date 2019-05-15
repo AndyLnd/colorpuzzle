@@ -1,5 +1,4 @@
 import {
-  PosGroup,
   Position,
   addPositionsWrap,
   isSame,
@@ -7,11 +6,13 @@ import {
   getExits,
   dirVectors,
   rotateExits,
-  RichPosition,
+  PosStroke,
+  Map,
+  Tile,
 } from './position';
 import {rndInt, rndArrayElement} from './util';
 
-const makePath = (width: number, height: number, color: number): RichPosition[] => {
+const makePath = (width: number, height: number, color: number): PosStroke[] => {
   let isDone = false;
   let steps: Position[] = [];
   const minLength = Math.min(width + height, width * height - 1);
@@ -38,16 +39,16 @@ const makePath = (width: number, height: number, color: number): RichPosition[] 
     }
   }
   return steps.map(
-    (point, index): RichPosition => {
+    (point, index): PosStroke => {
       const prev = index === 0 ? steps[steps.length - 1] : steps[index - 1];
       const next = index === steps.length - 1 ? steps[0] : steps[index + 1];
       const exits = getExits(point, prev, next);
-      return {x: point.x, y: point.y, exits, color};
+      return {x: point.x, y: point.y, stroke: {exits, color}};
     }
   );
 };
 
-export const makeMap = (width: number, height: number): PosGroup[] => {
+export const makeMap = (width: number, height: number, randomRotate = false): Map => {
   const paths = [
     ...makePath(width, height, 0),
     ...makePath(width, height, 1),
@@ -55,27 +56,22 @@ export const makeMap = (width: number, height: number): PosGroup[] => {
     ...makePath(width, height, 3),
   ];
   return Array.from({length: width * height}, (_, index) => {
-    const {x, y} = getPosition(index, width);
-    const localPaths = paths.filter(path => path.x === x && path.y === y);
-    return {x, y, tiles: localPaths};
+    const pos = getPosition(index, width);
+    const strokes = paths.filter(path => isSame(path, pos)).map(({stroke}) => stroke);
+    return {...pos, strokes, rotation: randomRotate ? Math.floor(Math.random() * 16) : 0};
   });
 };
 
-interface RotPosGroup extends PosGroup {
-  rotation: number;
-}
-
-export const checkSolved = (posMap: PosGroup[], rotation: number[], width: number, height: number) => {
-  const rotationMap = posMap.map((pos, index) => ({...pos, rotation: rotation[index]}));
-  return rotationMap.every(({x, y, rotation, tiles}) =>
-    tiles.every(({color, exits}) => {
+export const checkSolved = (map: Map, width: number, height: number) => {
+  return map.every(({x, y, rotation, strokes}) =>
+    strokes.every(({color, exits}) => {
       const rotExits = rotateExits(exits, rotation);
       return rotExits.every(exit => {
         const pos = addPositionsWrap({x, y}, dirVectors[exit], width, height);
-        const neighbor = rotationMap.find(other => isSame(pos, other)) as RotPosGroup;
-        return neighbor.tiles.some(nbTile => {
-          if (nbTile.color === color) {
-            const nbExitOpposites = rotateExits(nbTile.exits, neighbor.rotation + 2);
+        const neighbor = map.find(other => isSame(pos, other)) as Tile;
+        return neighbor.strokes.some(nbStroke => {
+          if (nbStroke.color === color) {
+            const nbExitOpposites = rotateExits(nbStroke.exits, neighbor.rotation + 2);
             return nbExitOpposites.includes(exit);
           }
           return false;
