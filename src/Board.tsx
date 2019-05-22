@@ -3,6 +3,16 @@ import {jsx} from '@emotion/core';
 import {useContext} from 'react';
 import Tile from './Tile';
 import {GameContext} from './GameProvider';
+import {Map, Tile as TileType} from './position';
+
+interface BoardProps {
+  map: Map;
+  width: number;
+  height: number;
+  rotateTile: (tile: TileType) => void;
+  tileSize: number;
+  isSolved?: boolean;
+}
 
 const boardStyle = (width: number, height: number, tileSize: number, isSolved: boolean) => ({
   display: 'block',
@@ -14,15 +24,15 @@ const boardStyle = (width: number, height: number, tileSize: number, isSolved: b
   padding: isSolved ? 32 : 0,
   transform: isSolved ? 'scale(.75)' : 'scale(1)',
   borderRadius: isSolved ? 64 : 0,
-  transition: 'all .5s ease-in-out',
+  opacity: isSolved ? 1 : 0.8,
+  transition: 'all 1s ease-in-out',
 });
 
-export default () => {
-  const {rotate, map, width, height, tileSize, isSolved} = useContext(GameContext);
+export default ({map, width, height, rotateTile, tileSize, isSolved = false}: BoardProps) => {
   return (
     <svg viewBox={`0 0 ${width} ${height}`} css={boardStyle(width, height, tileSize, isSolved)}>
-      {map.map((tile, index) => (
-        <Tile tile={tile} isSolved={isSolved} onClick={() => rotate(index)} key={`${tile.x},${tile.y}`} />
+      {map.map(tile => (
+        <Tile tile={tile} onClick={() => !isSolved && rotateTile(tile)} key={`${tile.x},${tile.y}`} />
       ))}
     </svg>
   );

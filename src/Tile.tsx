@@ -6,7 +6,6 @@ import {colors, exitsToPath} from './tileRenderer';
 
 interface TileProps {
   onClick: (event: MouseEvent<HTMLOrSVGElement>) => void;
-  isSolved: boolean;
   tile: Tile;
 }
 
@@ -21,13 +20,14 @@ const tileStyle = {
   },
 };
 
-export default ({tile: {x, y, strokes, rotation}, onClick, isSolved}: TileProps) => {
+export default ({tile: {x, y, strokes, rotation}, onClick}: TileProps) => {
   return (
-    <svg x={x} y={y} css={tileStyle} onClick={onClick}>
-      <g opacity={isSolved ? 1 : 0.8} transform={`rotate(${rotation * 90} .5 .5)`}>
+    <svg x={x} y={y} css={tileStyle} onClick={onClick} pointerEvents="all">
+      <g transform={`rotate(${rotation * 90} .5 .5)`}>
         {strokes.map(({color, exits}) => (
           <path stroke={colors[color]} d={exitsToPath(exits)} />
         ))}
+        <rect x="0" y="0" width="100%" height="100%" fill="none" />
       </g>
     </svg>
   );
