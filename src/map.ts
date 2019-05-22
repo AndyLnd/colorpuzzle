@@ -8,9 +8,18 @@ import {
   rotateExits,
   PosStroke,
   Map,
-  Tile,
 } from './position';
 import {rndInt, rndArrayElement} from './util';
+
+const mapPosToPosStroke = (posMap: Position[], color: number) =>
+  posMap.map(
+    (point, index): PosStroke => {
+      const prev = index === 0 ? posMap[posMap.length - 1] : posMap[index - 1];
+      const next = index === posMap.length - 1 ? posMap[0] : posMap[index + 1];
+      const exits = getExits(point, prev, next);
+      return {x: point.x, y: point.y, stroke: {exits, color}};
+    }
+  );
 
 const makePath = (width: number, height: number, color: number): PosStroke[] => {
   let isDone = false;
@@ -38,14 +47,7 @@ const makePath = (width: number, height: number, color: number): PosStroke[] => 
       }
     }
   }
-  return steps.map(
-    (point, index): PosStroke => {
-      const prev = index === 0 ? steps[steps.length - 1] : steps[index - 1];
-      const next = index === steps.length - 1 ? steps[0] : steps[index + 1];
-      const exits = getExits(point, prev, next);
-      return {x: point.x, y: point.y, stroke: {exits, color}};
-    }
-  );
+  return mapPosToPosStroke(steps, color);
 };
 
 export const makeMap = (width: number, height: number, randomRotate = false): Map => {
@@ -62,13 +64,42 @@ export const makeMap = (width: number, height: number, randomRotate = false): Ma
   });
 };
 
+export const makeDemoMap = (): Map => {
+  const pathPosA = [
+    {x: 0, y: 0},
+    {x: 1, y: 0},
+    {x: 2, y: 0},
+    {x: 3, y: 0},
+    {x: 3, y: 1},
+    {x: 2, y: 1},
+    {x: 1, y: 1},
+    {x: 0, y: 1},
+  ];
+  const pathPosB = [
+    {x: 1, y: 0},
+    {x: 2, y: 0},
+    {x: 2, y: 1},
+    {x: 2, y: 2},
+    {x: 2, y: 3},
+    {x: 1, y: 3},
+    {x: 1, y: 2},
+    {x: 1, y: 1},
+  ];
+  const paths = [...mapPosToPosStroke(pathPosA, rndInt(4)), ...mapPosToPosStroke(pathPosB, rndInt(4))];
+  return Array.from({length: 16}, (_, index) => {
+    const pos = getPosition(index, 4);
+    const strokes = paths.filter(path => isSame(path, pos)).map(({stroke}) => stroke);
+    return {...pos, strokes, rotation: 0};
+  });
+};
+
 export const checkSolved = (map: Map, width: number, height: number) => {
   return map.every(({x, y, rotation, strokes}) =>
     strokes.every(({color, exits}) => {
       const rotExits = rotateExits(exits, rotation);
       return rotExits.every(exit => {
         const pos = addPositionsWrap({x, y}, dirVectors[exit], width, height);
-        const neighbor = map.find(other => isSame(pos, other)) as Tile;
+        const neighbor = map.find(other => isSame(pos, other))!;
         return neighbor.strokes.some(nbStroke => {
           if (nbStroke.color === color) {
             const nbExitOpposites = rotateExits(nbStroke.exits, neighbor.rotation + 2);

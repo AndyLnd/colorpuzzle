@@ -2,34 +2,28 @@
 import {jsx} from '@emotion/core';
 import {useContext} from 'react';
 import Tile from './Tile';
-import {getPosition} from './position';
-import FullScreenCenter from './FullScreenCenter';
-import css from '@emotion/css';
 import {GameContext} from './GameProvider';
 
-const boardStyle = (width: number, height: number, tileSize: number) =>
-  css({
-    position: 'absolute',
-    margin: 'auto',
-    display: 'grid',
-    gridTemplateColumns: `repeat(${width}, 1fr)`,
-    gridTemplateRows: `repeat(${height}, 1fr)`,
-    width: tileSize * width,
-    height: tileSize * height,
-  });
+const boardStyle = (width: number, height: number, tileSize: number, isSolved: boolean) => ({
+  display: 'block',
+  gridTemplateColumns: `repeat(${width}, 1fr)`,
+  gridTemplateRows: `repeat(${height}, 1fr)`,
+  width: tileSize * width,
+  height: tileSize * height,
+  background: isSolved ? 'rgba(0,0,0,.8)' : 'rgba(0,0,0,0)',
+  padding: isSolved ? 32 : 0,
+  transform: isSolved ? 'scale(.75)' : 'scale(1)',
+  borderRadius: isSolved ? 64 : 0,
+  transition: 'all .5s ease-in-out',
+});
 
-export default (props: React.Props<HTMLDivElement>) => {
-  const {rotate, map, width, height, tileSize} = useContext(GameContext);
+export default () => {
+  const {rotate, map, width, height, tileSize, isSolved} = useContext(GameContext);
   return (
-    <FullScreenCenter {...props}>
-      <div css={boardStyle(width, height, tileSize)}>
-        {map.map((tile, index) => {
-          const {x, y} = getPosition(index, width);
-          return (
-            <Tile strokes={tile.strokes} rotation={tile.rotation} onClick={() => rotate(index)} key={`${x},${y}`} />
-          );
-        })}
-      </div>
-    </FullScreenCenter>
+    <svg viewBox={`0 0 ${width} ${height}`} css={boardStyle(width, height, tileSize, isSolved)}>
+      {map.map((tile, index) => (
+        <Tile tile={tile} isSolved={isSolved} onClick={() => rotate(index)} key={`${tile.x},${tile.y}`} />
+      ))}
+    </svg>
   );
 };

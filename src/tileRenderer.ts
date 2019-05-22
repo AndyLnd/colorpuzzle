@@ -1,4 +1,4 @@
-import {Direction, rotateExits, Map, Stroke} from './position';
+import {Direction, rotateExits, Map, Exits} from './position';
 
 const roundC = 0.2761;
 const corners = {
@@ -8,38 +8,24 @@ const corners = {
   [Direction.West]: {x: 0, y: 0.5, cx: roundC, cy: 0.5},
 };
 
-const colors = ['#f00', '#12f', '#080', '#fb0'];
+export const colors = ['#d10', '#12e', '#080', '#eb0'];
 
-const makeContext = (width: number, height: number) => {
-  const canvas = Object.assign(document.createElement('canvas'), {width, height});
-  return canvas.getContext('2d') as CanvasRenderingContext2D;
-};
-
-const drawCurve = (ctx: CanvasRenderingContext2D, color: number, exits: Direction[], size: number) => {
-  ctx.strokeStyle = colors[color];
-  ctx.lineWidth = size / 2;
+export const exitsToPath = (exits: Exits): string => {
   const c1 = corners[exits[0]];
   const c2 = corners[exits[1]];
-  ctx.beginPath();
-  ctx.moveTo(c1.x * size, c1.y * size);
-  ctx.bezierCurveTo(c1.cx * size, c1.cy * size, c2.cx * size, c2.cy * size, c2.x * size, c2.y * size);
-  ctx.stroke();
+  return `M ${c1.x} ${c1.y} C ${c1.cx} ${c1.cy}, ${c2.cx} ${c2.cy}, ${c2.x} ${c2.y}`;
 };
 
-export const renderTile = (strokes: Stroke[], size = 256) => {
-  const ctx = makeContext(size, size);
-  ctx.globalCompositeOperation = 'screen';
-  strokes.forEach(({color, exits}) => drawCurve(ctx, color, exits, size));
-  return ctx.canvas;
-};
 
-export const renderMap = (map: Map, width: number, height: number, size = 256) => {
-  const ctx = makeContext(width * size, height * size);
-  ctx.globalCompositeOperation = 'screen';
-  map.forEach(({strokes, rotation, x, y}) => {
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.translate(x * size, y * size);
-    strokes.forEach(({color, exits}) => drawCurve(ctx, color, rotateExits(exits, rotation), size));
+const strokePathString = (color: number, exits: Exits) => `<path stroke="${colors[color]}" d="${exitsToPath(exits)}"/>`;
+
+export const svgMap = (map: Map, width: number, height: number, size = 64) => {
+  const curves = map.map(({strokes, rotation, x, y}) => {
+    const svgStrokes = strokes.map(({color, exits}) => strokePathString(color, rotateExits(exits, rotation)));
+    return `<g transform="translate(${x} ${y})">${svgStrokes.join('')}</g>`;
   });
-  return ctx.canvas;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size * width}" height="${size *
+    height}" viewBox="0 0 ${width} ${height}" stroke-width=".5"><style>path { mix-blend-mode: screen;}</style>${curves.join(
+    ''
+  )}</svg>`;
 };

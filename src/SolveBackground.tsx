@@ -2,7 +2,7 @@
 import {jsx, keyframes, ObjectInterpolation} from '@emotion/core';
 import {useState, useEffect, useContext} from 'react';
 import {GameContext} from './GameProvider';
-import {renderMap} from './tileRenderer';
+import {svgMap} from './tileRenderer';
 
 const moveXAni = (size: number) =>
   keyframes({
@@ -43,17 +43,23 @@ const size = 64;
 
 export default (props: React.Props<HTMLDivElement>) => {
   const {width, height, map, isSolved} = useContext(GameContext);
-  const [bg, setBG] = useState('data:,');
+  //const [bg, setBg] = useState('data:,');
+  const rendered = svgMap(map, width, height, size * 2);
+  const bg = `data:image/svg+xml;utf8,${rendered.replace(/#/g, '%23')}`;
+  /*
   useEffect(() => {
     if (isSolved) {
-      const rendered = renderMap(map, width, height, size * 2);
-      setBG(rendered.toDataURL());
+      const rendered = svgMap(map, width, height, size * 2);
+      const newBg = `data:image/svg+xml;utf8,${rendered.replace(/#/g, '%23')}`;
+      console.log(newBg);
+      setBg(newBg);
     }
   }, [isSolved]);
+  */
   return (
     <div
       css={solvedStyle(size * width)}
-      style={{backgroundSize: `${size * width}px`, backgroundImage: `url(${bg})`}}
+      style={{backgroundSize: `${size * width}px`, backgroundImage: `url('${bg}')`}}
       {...props}
     />
   );

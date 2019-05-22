@@ -28,7 +28,7 @@ export interface TileContent {
   strokes: Stroke[];
 }
 
-export interface Tile extends Position, TileContent {}
+export type Tile = Position & TileContent;
 
 export type Map = Tile[];
 

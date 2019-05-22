@@ -1,5 +1,5 @@
 import React, {useReducer} from 'react';
-import {makeMap, checkSolved} from './map';
+import {makeMap, checkSolved, makeDemoMap} from './map';
 import {Map} from './position';
 
 interface State {
@@ -19,12 +19,12 @@ interface Context extends State {
 type Action = {type: 'start'; payload: {width: number; height: number}} | {type: 'rotate'; payload: number};
 
 const defaultState: State = {
-  width: 3,
-  height: 3,
-  map: [],
+  width: 4,
+  height: 4,
+  map: makeDemoMap(),
   isSolved: false,
   isStarted: false,
-  tileSize: 0,
+  tileSize: 50,
 };
 
 const defaultContext = {
@@ -41,20 +41,20 @@ const gameReducer = (state: State, action: Action) => {
       const {width, height} = action.payload;
       const totalSize = Math.min(document.body.offsetHeight, document.body.offsetWidth, 532) - 32;
       const tileSize = Math.floor(totalSize / (Math.max(width, height) * 4)) * 4;
+      const map = makeMap(width, height, true);
       return {
         isSolved: false,
         width,
         height,
-        map: makeMap(width, height, true),
+        map,
         isStarted: true,
         tileSize,
       };
     }
     case 'rotate': {
-      console.log('rotate')
       const num = action.payload;
       const map = state.map.map((tile, index) => (index === num ? {...tile, rotation: tile.rotation + 1} : tile));
-      const isSolved = checkSolved(map, state.width, state.width);
+      const isSolved = state.isStarted && checkSolved(map, state.width, state.width);
       return {...state, map, isSolved};
     }
     default: {
