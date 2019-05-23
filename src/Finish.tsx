@@ -1,6 +1,6 @@
 /** @jsx jsx */
-import {jsx, css} from '@emotion/core';
-import React, {useRef, useEffect, useContext} from 'react';
+import {jsx, css, keyframes} from '@emotion/core';
+import React, {useRef, useContext} from 'react';
 import {rndArrayElement} from './util';
 import {GameContext} from './GameProvider';
 
@@ -13,6 +13,7 @@ const style = (boardSize: number) =>
     fontSize: 100,
     cursor: 'pointer',
     marginTop: boardSize / -8,
+    animation: `${glow} 1s ease-in-out alternate infinite`,
     '&.growIn-enter': {
       fontSize: 0,
       marginTop: 0,
@@ -23,6 +24,15 @@ const style = (boardSize: number) =>
       transition: 'font-size .5s ease-in-out, margin-top .5s ease-in-out',
     },
   });
+
+const glow = keyframes({
+  '0%': {
+    textShadow: '0 0 0px rgba(255,255,255,.6)',
+  },
+  '100%': {
+    textShadow: '0 0 9px rgba(255,255,255,.6)',
+  },
+});
 const animals = Array.from('🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐸🐵');
 export default (props: React.HTMLAttributes<HTMLDivElement>) => {
   const animal = useRef(rndArrayElement(animals));

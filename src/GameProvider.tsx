@@ -1,6 +1,7 @@
-import React, {useReducer} from 'react';
+import React, {useReducer, useEffect} from 'react';
 import {makeMap, checkSolved, makeDemoMap} from './map';
 import {Map, Tile} from './position';
+import {rndArrayElement} from './util';
 
 interface State {
   width: number;
@@ -10,6 +11,7 @@ interface State {
   isSolved: boolean;
   isStarted: boolean;
   tileSize: number;
+  showBackground: boolean;
 }
 
 interface Context extends State {
@@ -21,7 +23,9 @@ interface Context extends State {
 type Action =
   | {type: 'start'; payload: {width: number; height: number}}
   | {type: 'rotate'; payload: Tile}
-  | {type: 'reset'};
+  | {type: 'reset'}
+  | {type: 'showBackground'}
+  | {type: 'rotateDemo'};
 
 const defaultState: State = {
   width: 4,
@@ -31,6 +35,7 @@ const defaultState: State = {
   isSolved: false,
   isStarted: false,
   tileSize: 50,
+  showBackground: false,
 };
 
 const defaultContext = {
@@ -53,7 +58,7 @@ const gameReducer = (state: State, action: Action) => {
         isSolved: false,
         width,
         height,
-        map: makeMap(width, height, true),
+        map: makeMap(width, height, false),
         isStarted: true,
         tileSize,
       };
@@ -68,7 +73,21 @@ const gameReducer = (state: State, action: Action) => {
         ...state,
         introMap: makeDemoMap(),
         isStarted: false,
+        showBackground: false,
       };
+    }
+    case 'showBackground': {
+      return {
+        ...state,
+        showBackground: true,
+      };
+    }
+    case 'rotateDemo': {
+      const randomTile = rndArrayElement(state.introMap);
+      const introMap = state.introMap.map(tile =>
+        tile === randomTile ? {...tile, rotation: tile.rotation + 1} : tile
+      );
+      return {...state, introMap};
     }
     default: {
       return state;
@@ -81,7 +100,29 @@ export default ({children}: {children: React.ReactNode}) => {
   const start = (width: number, height: number) => dispatch({type: 'start', payload: {width, height}});
   const rotateTile = (tile: Tile) => dispatch({type: 'rotate', payload: tile});
   const reset = () => dispatch({type: 'reset'});
-  const {width, height, introMap, map, isSolved, isStarted, tileSize} = state;
+  const {width, height, introMap, map, isSolved, isStarted, tileSize, showBackground} = state;
+  useEffect(() => {
+    let id: NodeJS.Timeout;
+    if (isSolved) {
+      id = setTimeout(() => {
+        dispatch({type: 'showBackground'});
+      }, 1000);
+    }
+    return () => {
+      clearTimeout(id);
+    };
+  }, [isSolved]);
+  useEffect(() => {
+    let id: NodeJS.Timeout;
+    if (!isStarted) {
+      id = setInterval(() => {
+        dispatch({type: 'rotateDemo'});
+      }, 500);
+    }
+    return () => {
+      clearInterval(id);
+    };
+  }, [isStarted]);
 
   return (
     <GameContext.Provider
@@ -96,6 +137,7 @@ export default ({children}: {children: React.ReactNode}) => {
         reset,
         isStarted,
         tileSize,
+        showBackground,
       }}
     >
       {children}

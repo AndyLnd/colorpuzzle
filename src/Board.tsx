@@ -1,8 +1,6 @@
 /** @jsx jsx */
 import {jsx} from '@emotion/core';
-import {useContext} from 'react';
 import Tile from './Tile';
-import {GameContext} from './GameProvider';
 import {Map, Tile as TileType} from './position';
 
 interface BoardProps {

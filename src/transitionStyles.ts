@@ -21,19 +21,4 @@ export const scaleInTransition = css`
   }
 `;
 
-export const fadeInTransition = css`
-&.fadeIn-enter {
-  opacity: 0;
-}
-&.fadeIn-enter-active {
-  opacity: 1;
-  transition: opacity 1s;
-}
-&.fadeIn-exit {
-  opacity: 1;
-}
-&.fadeIn-exit-active {
-  opacity: 0;
-  transition: opacity 1s;
-}
-`
+
