@@ -58,7 +58,7 @@ const gameReducer = (state: State, action: Action) => {
         isSolved: false,
         width,
         height,
-        map: makeMap(width, height, false),
+        map: makeMap(width, height, true),
         isStarted: true,
         tileSize,
       };
