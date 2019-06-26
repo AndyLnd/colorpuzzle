@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/core": "^10.0.10",
+    "@emotion/core": "^10.0.14",
     "@types/react": "^16.8.18",
     "@types/react-dom": "^16.8.4",
     "@types/react-transition-group": "^2.9.1",
