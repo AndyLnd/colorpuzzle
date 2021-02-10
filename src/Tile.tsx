@@ -6,6 +6,7 @@ import {colors, exitsToPath} from './tileRenderer';
 
 interface TileProps {
   onClick: (event: MouseEvent<HTMLOrSVGElement>) => void;
+  onRightClick: (event: MouseEvent<HTMLOrSVGElement>) => void;
   tile: Tile;
 }
 
@@ -20,9 +21,9 @@ const tileStyle = {
   },
 };
 
-export default ({tile: {x, y, strokes, rotation}, onClick}: TileProps) => {
+export default ({tile: {x, y, strokes, rotation}, onClick, onRightClick}: TileProps) => {
   return (
-    <svg x={x} y={y} css={tileStyle} onClick={onClick} pointerEvents="all">
+    <svg x={x} y={y} css={tileStyle} onClick={onClick} onContextMenu={onRightClick} pointerEvents="all">
       <g transform={`rotate(${rotation * 90} .5 .5)`}>
         {strokes.map(({color, exits}) => (
           <path stroke={colors[color]} d={exitsToPath(exits)} />

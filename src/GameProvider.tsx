@@ -1,7 +1,7 @@
 import React, {useReducer, useEffect} from 'react';
 import {makeMap, checkSolved, makeDemoMap} from './map';
 import {Map, Tile} from './position';
-import {rndArrayElement} from './util';
+import {rndArrayElement, rndInt} from './util';
 
 interface State {
   width: number;
@@ -16,13 +16,13 @@ interface State {
 
 interface Context extends State {
   start: (width: number, height: number) => void;
-  rotateTile: (tile: Tile) => void;
+  rotateTile: (tile: Tile, turns: number) => void;
   reset: () => void;
 }
 
 type Action =
   | {type: 'start'; payload: {width: number; height: number}}
-  | {type: 'rotate'; payload: Tile}
+  | {type: 'rotate'; payload: {tile: Tile; turns: number}}
   | {type: 'reset'}
   | {type: 'showBackground'}
   | {type: 'rotateDemo'};
@@ -64,7 +64,9 @@ const gameReducer = (state: State, action: Action) => {
       };
     }
     case 'rotate': {
-      const map = state.map.map(tile => (tile === action.payload ? {...tile, rotation: tile.rotation + 1} : tile));
+      const map = state.map.map((tile) =>
+        tile === action.payload.tile ? {...tile, rotation: tile.rotation + action.payload.turns} : tile
+      );
       const isSolved = state.isStarted && checkSolved(map, state.width, state.width);
       return {...state, map, isSolved};
     }
@@ -83,9 +85,9 @@ const gameReducer = (state: State, action: Action) => {
       };
     }
     case 'rotateDemo': {
-      const randomTile = rndArrayElement(state.introMap);
-      const introMap = state.introMap.map(tile =>
-        tile === randomTile ? {...tile, rotation: tile.rotation + 1} : tile
+      const randomTile = rndArrayElement(state.introMap.filter((t) => t.strokes.length > 0));
+      const introMap = state.introMap.map((tile) =>
+        tile === randomTile ? {...tile, rotation: tile.rotation + (rndInt(2) > 0 ? 1 : -1)} : tile
       );
       return {...state, introMap};
     }
@@ -98,7 +100,7 @@ const gameReducer = (state: State, action: Action) => {
 export default ({children}: {children: React.ReactNode}) => {
   const [state, dispatch] = useReducer(gameReducer, defaultState);
   const start = (width: number, height: number) => dispatch({type: 'start', payload: {width, height}});
-  const rotateTile = (tile: Tile) => dispatch({type: 'rotate', payload: tile});
+  const rotateTile = (tile: Tile, turns: number) => dispatch({type: 'rotate', payload: {tile, turns}});
   const reset = () => dispatch({type: 'reset'});
   const {width, height, introMap, map, isSolved, isStarted, tileSize, showBackground} = state;
   useEffect(() => {
@@ -113,14 +115,18 @@ export default ({children}: {children: React.ReactNode}) => {
     };
   }, [isSolved]);
   useEffect(() => {
+    const loop = () => {
+      id = window.setTimeout(() => {
+        dispatch({type: 'rotateDemo'});
+        loop();
+      }, rndInt(600) + 200);
+    };
     let id: number;
     if (!isStarted) {
-      id = window.setInterval(() => {
-        dispatch({type: 'rotateDemo'});
-      }, 500);
+      loop();
     }
     return () => {
-      clearInterval(id);
+      clearTimeout(id);
     };
   }, [isStarted]);
 

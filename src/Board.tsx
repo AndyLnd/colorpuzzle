@@ -7,7 +7,7 @@ interface BoardProps {
   map: Map;
   width: number;
   height: number;
-  rotateTile: (tile: TileType) => void;
+  rotateTile: (tile: TileType, turns: number) => void;
   tileSize: number;
   isSolved?: boolean;
 }
@@ -29,8 +29,18 @@ const boardStyle = (width: number, height: number, tileSize: number, isSolved: b
 export default ({map, width, height, rotateTile, tileSize, isSolved = false}: BoardProps) => {
   return (
     <svg viewBox={`0 0 ${width} ${height}`} css={boardStyle(width, height, tileSize, isSolved)}>
-      {map.map(tile => (
-        <Tile tile={tile} onClick={() => !isSolved && rotateTile(tile)} key={`${tile.x},${tile.y}`} />
+      {map.map((tile) => (
+        <Tile
+          tile={tile}
+          onRightClick={e => {
+            e.preventDefault();
+            !isSolved && rotateTile(tile, -1);
+          }}
+          onClick={() => {
+            !isSolved && rotateTile(tile, 1);
+          }}
+          key={`${tile.x},${tile.y}`}
+        />
       ))}
     </svg>
   );

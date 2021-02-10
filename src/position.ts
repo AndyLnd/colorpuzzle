@@ -65,8 +65,8 @@ export const toDirection = (posA: Position, posB: Position): Direction => {
   return Direction.South;
 };
 
-export const getExits = (point: Position, prev: Position, next: Position) =>
-  [prev, next].map(pos => toDirection(pos, point)) as Exits;
+export const getExits = (point: Position, prev: Position, next: Position): Exits =>
+  [prev, next].map((pos) => toDirection(pos, point)) as Exits;
 
 export const hasNorth = (exits: Exits) => exits.includes(Direction.North);
 export const hasEast = (exits: Exits) => exits.includes(Direction.East);
@@ -75,7 +75,7 @@ export const hasWest = (exits: Exits) => exits.includes(Direction.West);
 export const hasNorthSouth = (exits: Exits) => hasNorth(exits) && hasSouth(exits);
 export const hasEastWest = (exits: Exits) => hasEast(exits) && hasWest(exits);
 
-export const rotateExits = (exits: Exits, rota: number) => exits.map(exit => (exit + rota) % 4) as Exits;
+export const rotateExits = (exits: Exits, rota: number) => exits.map((exit) => (((exit + rota) % 4) + 4) % 4) as Exits;
 
 export const dirVectors: Record<Direction, Position> = {
   [Direction.North]: {x: 0, y: -1},
