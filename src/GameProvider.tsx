@@ -102,7 +102,7 @@ export default ({children}: {children: React.ReactNode}) => {
   const reset = () => dispatch({type: 'reset'});
   const {width, height, introMap, map, isSolved, isStarted, tileSize, showBackground} = state;
   useEffect(() => {
-    let id: NodeJS.Timeout;
+    let id: number;
     if (isSolved) {
       id = setTimeout(() => {
         dispatch({type: 'showBackground'});
@@ -113,7 +113,7 @@ export default ({children}: {children: React.ReactNode}) => {
     };
   }, [isSolved]);
   useEffect(() => {
-    let id: NodeJS.Timeout;
+    let id: number;
     if (!isStarted) {
       id = setInterval(() => {
         dispatch({type: 'rotateDemo'});
