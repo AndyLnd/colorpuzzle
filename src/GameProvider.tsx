@@ -104,7 +104,7 @@ export default ({children}: {children: React.ReactNode}) => {
   useEffect(() => {
     let id: number;
     if (isSolved) {
-      id = setTimeout(() => {
+      id = window.setTimeout(() => {
         dispatch({type: 'showBackground'});
       }, 1000);
     }
@@ -115,7 +115,7 @@ export default ({children}: {children: React.ReactNode}) => {
   useEffect(() => {
     let id: number;
     if (!isStarted) {
-      id = setInterval(() => {
+      id = window.setInterval(() => {
         dispatch({type: 'rotateDemo'});
       }, 500);
     }

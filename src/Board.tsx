@@ -1,5 +1,5 @@
-/** @jsx jsx */
-import {jsx} from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+
 import Tile from './Tile';
 import {Map, Tile as TileType} from './position';
 

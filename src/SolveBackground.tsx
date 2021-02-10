@@ -1,5 +1,6 @@
-/** @jsx jsx */
-import {jsx, keyframes, ObjectInterpolation} from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+
+import {keyframes, Interpolation, Theme} from '@emotion/react';
 import {useContext} from 'react';
 import {GameContext} from './GameProvider';
 import {svgMap} from './tileRenderer';
@@ -29,7 +30,7 @@ const moveYAni = (size: number) =>
     },
   });
 
-const solvedStyle = (size: number): ObjectInterpolation<undefined> => ({
+const solvedStyle = (size: number): Interpolation<Theme> => ({
   position: 'absolute',
   top: 0,
   left: 0,
@@ -58,7 +59,7 @@ const solvedStyle = (size: number): ObjectInterpolation<undefined> => ({
 
 const size = 64;
 
-export default (props: React.Props<HTMLDivElement>) => {
+export default (props: React.ClassAttributes<HTMLDivElement>) => {
   const {width, height, map} = useContext(GameContext);
   const rendered = svgMap(map, width, height, size * 2);
   const bg = `data:image/svg+xml;utf8,${rendered.replace(/#/g, '%23')}`;

@@ -1,5 +1,5 @@
-/** @jsx jsx */
-import {jsx} from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+
 import React, {useContext} from 'react';
 import {CSSTransition} from 'react-transition-group';
 import Board from './Board';

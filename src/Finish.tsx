@@ -1,5 +1,6 @@
-/** @jsx jsx */
-import {jsx, css, keyframes} from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+
+import {css, keyframes} from '@emotion/react';
 import React, {useRef, useContext} from 'react';
 import {rndArrayElement} from './util';
 import {GameContext} from './GameProvider';

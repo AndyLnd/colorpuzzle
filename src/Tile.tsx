@@ -1,5 +1,5 @@
-/** @jsx jsx */
-import {jsx} from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+
 import {Tile} from './position';
 import {MouseEvent} from 'react';
 import {colors, exitsToPath} from './tileRenderer';
