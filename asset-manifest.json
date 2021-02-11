@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.js": "/colorpuzzle/static/js/main.caaadae4.chunk.js",
-    "main.js.map": "/colorpuzzle/static/js/main.caaadae4.chunk.js.map",
+    "main.js": "/colorpuzzle/static/js/main.bd51ee78.chunk.js",
+    "main.js.map": "/colorpuzzle/static/js/main.bd51ee78.chunk.js.map",
     "runtime-main.js": "/colorpuzzle/static/js/runtime-main.3301ea9a.js",
     "runtime-main.js.map": "/colorpuzzle/static/js/runtime-main.3301ea9a.js.map",
     "static/js/2.4e25f228.chunk.js": "/colorpuzzle/static/js/2.4e25f228.chunk.js",
@@ -12,6 +12,6 @@
   "entrypoints": [
     "static/js/runtime-main.3301ea9a.js",
     "static/js/2.4e25f228.chunk.js",
-    "static/js/main.caaadae4.chunk.js"
+    "static/js/main.bd51ee78.chunk.js"
   ]
 }
