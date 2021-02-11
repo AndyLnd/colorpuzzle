@@ -1,11 +1,10 @@
 /** @jsxImportSource @emotion/react */
 
-import {keyframes, Interpolation, Theme} from '@emotion/react';
-import {useContext} from 'react';
+import {keyframes} from '@emotion/react';
+import type {Interpolation, Theme} from '@emotion/react';
+import {useContext, useMemo} from 'react';
 import {GameContext} from './GameProvider';
 import {svgMap} from './tileRenderer';
-
-export const fadeInTransition = {};
 
 const moveXAni = (size: number) =>
   keyframes({
@@ -61,12 +60,16 @@ const size = 64;
 
 export default (props: React.ClassAttributes<HTMLDivElement>) => {
   const {width, height, map} = useContext(GameContext);
-  const rendered = svgMap(map, width, height, size * 2);
-  const bg = `data:image/svg+xml;utf8,${rendered.replace(/#/g, '%23')}`;
+  const url = useMemo(() => {
+    const rendered = svgMap(map, width, height, size * 2);
+    var blob = new Blob([rendered], {type: 'image/svg+xml'});
+    return URL.createObjectURL(blob);
+  }, [width, height, map]);
+
   return (
     <div
       css={solvedStyle(size * width)}
-      style={{backgroundSize: `${size * width}px`, backgroundImage: `url('${bg}')`}}
+      style={{backgroundSize: `${size * width}px`, backgroundImage: `url('${url}')`}}
       {...props}
     />
   );
