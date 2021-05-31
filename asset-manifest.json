@@ -4,14 +4,14 @@
     "main.js.map": "/colorpuzzle/static/js/main.bd51ee78.chunk.js.map",
     "runtime-main.js": "/colorpuzzle/static/js/runtime-main.3301ea9a.js",
     "runtime-main.js.map": "/colorpuzzle/static/js/runtime-main.3301ea9a.js.map",
-    "static/js/2.4e25f228.chunk.js": "/colorpuzzle/static/js/2.4e25f228.chunk.js",
-    "static/js/2.4e25f228.chunk.js.map": "/colorpuzzle/static/js/2.4e25f228.chunk.js.map",
+    "static/js/2.06116841.chunk.js": "/colorpuzzle/static/js/2.06116841.chunk.js",
+    "static/js/2.06116841.chunk.js.map": "/colorpuzzle/static/js/2.06116841.chunk.js.map",
     "index.html": "/colorpuzzle/index.html",
-    "static/js/2.4e25f228.chunk.js.LICENSE.txt": "/colorpuzzle/static/js/2.4e25f228.chunk.js.LICENSE.txt"
+    "static/js/2.06116841.chunk.js.LICENSE.txt": "/colorpuzzle/static/js/2.06116841.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.3301ea9a.js",
-    "static/js/2.4e25f228.chunk.js",
+    "static/js/2.06116841.chunk.js",
     "static/js/main.bd51ee78.chunk.js"
   ]
 }
